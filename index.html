@@ -24,7 +24,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Chart.js para el Gráfico de Radar -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- html2pdf.js para la exportación real a PDF -->
+    <!-- html2pdf.js para exportación completa a PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         .text-size-sm { font-size: 87.5%; }
@@ -185,10 +185,10 @@
                 </div>
             </div>
 
-            <!-- COLUMNA DERECHA: RESULTADOS, RADAR CHART Y PLANES -->
+            <!-- COLUMNA DERECHA: RESULTADOS, RADAR CHART Y PLANES (CONTENEDOR EXCLUSIVO PARA PDF COMPLETO) -->
             <div class="lg:col-span-6 space-y-6">
                 <div id="pdf-export-container" class="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between transition-colors">
-                    <div>
+                    <div class="space-y-6">
                         <!-- Encabezado del Resultado -->
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-100 dark:border-slate-800 gap-4">
                             <div>
@@ -202,7 +202,7 @@
                         </div>
 
                         <!-- Métricas -->
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-6">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                             <div class="bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
                                 <i data-lucide="clock" class="w-5 h-5 text-amber-500 mx-auto mb-1"></i>
                                 <span class="block text-xs text-slate-500">Inasistencias</span>
@@ -226,9 +226,9 @@
                         </div>
 
                         <!-- Gráfico de Radar -->
-                        <div class="my-6 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col items-center">
+                        <div class="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col items-center">
                             <h3 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Evaluación Multidimensional (Radar IA)</h3>
-                            <div class="w-full max-w-[280px] h-[220px] flex items-center justify-center">
+                            <div class="w-full max-w-[260px] h-[200px] flex items-center justify-center">
                                 <canvas id="radarChart"></canvas>
                             </div>
                         </div>
@@ -273,7 +273,7 @@
         </div>
     </main>
 
-    <!-- CHATBOT FLOTANTE DE IA -->
+    <!-- CHATBOT FLOTANTE DE IA CORREGIDO -->
     <div class="fixed bottom-6 right-6 z-50">
         <button onclick="toggleChat()" id="chat-toggle-btn" class="w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-105 cursor-pointer">
             <i data-lucide="bot" class="w-7 h-7"></i>
@@ -289,8 +289,8 @@
             </div>
             
             <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-3 text-xs sm:text-sm bg-slate-50/50 dark:bg-slate-950/50">
-                <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 max-w-[85%]">
-                    ¡Hola! Soy tu asistente de IA conectado al sistema SIPA. Pregúntame sobre los estudiantes en riesgo, estadísticas o consejos pedagógicos.
+                <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 max-w-[85%] text-slate-800 dark:text-slate-200">
+                    ¡Hola! Soy tu asistente de IA. Pregúntame por alumnos específicos (ej: "¿Cómo va Pepito?"), estadísticas generales de riesgo, o consejos pedagógicos.
                 </div>
             </div>
 
@@ -338,7 +338,7 @@
                     </div>
                 </div>
 
-                <!-- Barra de Carga de Inferencia IA (Oculta por defecto) -->
+                <!-- Barra de Carga de Inferencia IA -->
                 <div id="inference-loading" class="hidden py-8 text-center space-y-4">
                     <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
                     <p id="inference-status" class="text-xs font-semibold text-slate-600 dark:text-slate-300">Iniciando preprocesamiento de datos...</p>
@@ -533,7 +533,7 @@
                     datasets: [{
                         label: 'Perfil Estudiante',
                         data: dataValues,
-                        backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                        backgroundColor: 'rgba(37, 99, 235, 0.25)',
                         borderColor: '#2563eb',
                         borderWidth: 2,
                         pointBackgroundColor: '#2563eb'
@@ -585,7 +585,6 @@
 
             updateRadarChart(selectedStudent.radar);
 
-            // Activar botones de envío y PDF
             ['btn-send', 'btn-pdf'].forEach(id => {
                 const btn = document.getElementById(id);
                 btn.disabled = false;
@@ -620,7 +619,6 @@
             }
             errorBox.classList.add('hidden');
 
-            // Mostrar barra de carga de inferencia IA
             document.getElementById('modal-form-inputs').classList.add('hidden');
             document.getElementById('btn-save-inference').classList.add('hidden');
             const loadingDiv = document.getElementById('inference-loading');
@@ -708,21 +706,21 @@
             setTimeout(() => { toast.classList.add('translate-y-32', 'opacity-0'); }, 4000);
         }
 
-        // EXPORTAR A PDF REAL
+        // EXPORTAR A PDF COMPLETO (TODO EL REPORTE Y GRÁFICAS)
         function exportPDF() {
             if (!selectedStudent) return;
             const element = document.getElementById('pdf-export-container');
             const opt = {
-                margin:       10,
+                margin:       [10, 10, 10, 10],
                 filename:     `Reporte_SIPA_${selectedStudent.name.replace(/\s+/g, '_')}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
+                html2canvas:  { scale: 2, useCORS: true, logging: true, scrollY: 0 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             html2pdf().from(element).set(opt).save();
         }
 
-        // CHATBOT FUNCIONAL DE IA
+        // CHATBOT FUNCIONAL DE IA CORREGIDO
         function toggleChat() {
             const win = document.getElementById('chat-window');
             win.classList.toggle('hidden');
@@ -746,25 +744,41 @@
             input.value = '';
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            // Simulación de respuesta de IA basada en contexto real
+            // Lógica inteligente de respuesta basada en los datos reales de `students` y `selectedStudent`
             setTimeout(() => {
-                let response = "Analizando la base de datos institucional de UNIMINUTO... ";
+                let response = "";
                 const qLower = query.toLowerCase();
 
-                if (qLower.includes("riesgo") || qLower.includes("alto")) {
+                // Buscar si el usuario mencionó el nombre de algún estudiante de la lista
+                const foundStudent = students.find(s => qLower.includes(s.name.toLowerCase()));
+
+                if (foundStudent) {
+                    response = `📋 **Estudiante:** ${foundStudent.name}\n• **Riesgo:** ${foundStudent.riskLevel} (${foundStudent.prediction})\n• **Asistencia:** ${foundStudent.attendance}%\n• **Estudio:** ${foundStudent.studyHours}h/sem\n• **GPA:** ${foundStudent.gpa}\n• **Factor principal:** ${foundStudent.factors[0]}`;
+                } else if (qLower.includes("seleccionado") || qLower.includes("actual")) {
+                    if (selectedStudent) {
+                        response = `👤 Estudiante activo: **${selectedStudent.name}**. Nivel de riesgo **${selectedStudent.riskLevel}**, asistencia del ${selectedStudent.attendance}% y promedio ${selectedStudent.gpa}.`;
+                    } else {
+                        response = "Actualmente no tienes ningún estudiante seleccionado en el panel derecho.";
+                    }
+                } else if (qLower.includes("riesgo") || qLower.includes("alto")) {
                     const highRisk = students.filter(s => s.riskLevel === 'Alto');
-                    response += `Hay ${highRisk.length} estudiante(s) en riesgo alto: ${highRisk.map(s => s.name).join(', ')}. Se recomienda activar tutorías inmediatas.`;
-                } else if (qLower.includes("asistencia") || qLower.includes("asisten")) {
+                    if (highRisk.length > 0) {
+                        response = `⚠️ Hay **${highRisk.length}** estudiante(s) en riesgo alto: ${highRisk.map(s => s.name).join(', ')}.`;
+                    } else {
+                        response = "¡Excelente noticia! Actualmente ningún estudiante se encuentra en riesgo alto.";
+                    }
+                } else if (qLower.includes("promedio") || qLower.includes("asistencia") || qLower.includes("estadística") || qLower.includes("total")) {
                     const avgAtt = Math.round(students.reduce((acc, s) => acc + s.attendance, 0) / students.length);
-                    response += `El promedio general de asistencia en el grupo analizado es del ${avgAtt}%.`;
-                } else if (selectedStudent && (qLower.includes("él") || qLower.includes("ella") || qLower.includes("estudiante") || qLower.includes("su"))) {
-                    response += `Para ${selectedStudent.name}, el modelo detectó un nivel de riesgo ${selectedStudent.riskLevel}. Su principal factor es: ${selectedStudent.factors[0]}.`;
+                    const totalCount = students.length;
+                    response = `📊 **Estadísticas Generales:**\n• Total de alumnos evaluados: ${totalCount}\n• Promedio grupal de asistencia: ${avgAtt}%\n• Modelos analíticos activos en UNIMINUTO.`;
+                } else if (qLower.includes("consejo") || qLower.includes("pedagógico") || qlower.includes("ayuda")) {
+                    response = `💡 **Consejo pedagógico:** Para alumnos con asistencia inferior al 75%, el modelo recomienda tutorías quincenales y correos de seguimiento institucional para evitar deserción.`;
                 } else {
-                    response += `Como asesor de SIPA-IA, te sugiero revisar las horas de estudio semanales y mantener una comunicación constante con los tutores asignados.`;
+                    response = `Entiendo tu consulta sobre "${query}". Puedes preguntarme por alumnos específicos (ej: "${students[0]?.name || 'Pepito Perez'}"), cuántos estudiantes están en riesgo, o ver los promedios generales.`;
                 }
 
                 chatMessages.innerHTML += `
-                    <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 max-w-[85%] text-slate-800 dark:text-slate-200">
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 max-w-[85%] text-slate-800 dark:text-slate-200 whitespace-pre-line">
                         ${response}
                     </div>
                 `;
