@@ -273,7 +273,7 @@
         </div>
     </main>
 
-    <!-- CHATBOT FLOTANTE DE IA CORREGIDO -->
+    <!-- CHATBOT FLOTANTE DE IA -->
     <div class="fixed bottom-6 right-6 z-50">
         <button onclick="toggleChat()" id="chat-toggle-btn" class="w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-105 cursor-pointer">
             <i data-lucide="bot" class="w-7 h-7"></i>
@@ -744,12 +744,11 @@
             input.value = '';
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            // Lógica inteligente de respuesta basada en los datos reales de `students` y `selectedStudent`
+            // Lógica inteligente de respuesta basada en los datos reales de students
             setTimeout(() => {
                 let response = "";
                 const qLower = query.toLowerCase();
 
-                // Buscar si el usuario mencionó el nombre de algún estudiante de la lista
                 const foundStudent = students.find(s => qLower.includes(s.name.toLowerCase()));
 
                 if (foundStudent) {
@@ -771,7 +770,7 @@
                     const avgAtt = Math.round(students.reduce((acc, s) => acc + s.attendance, 0) / students.length);
                     const totalCount = students.length;
                     response = `📊 **Estadísticas Generales:**\n• Total de alumnos evaluados: ${totalCount}\n• Promedio grupal de asistencia: ${avgAtt}%\n• Modelos analíticos activos en UNIMINUTO.`;
-                } else if (qLower.includes("consejo") || qLower.includes("pedagógico") || qlower.includes("ayuda")) {
+                } else if (qLower.includes("consejo") || qLower.includes("pedagógico") || qLower.includes("ayuda")) {
                     response = `💡 **Consejo pedagógico:** Para alumnos con asistencia inferior al 75%, el modelo recomienda tutorías quincenales y correos de seguimiento institucional para evitar deserción.`;
                 } else {
                     response = `Entiendo tu consulta sobre "${query}". Puedes preguntarme por alumnos específicos (ej: "${students[0]?.name || 'Pepito Perez'}"), cuántos estudiantes están en riesgo, o ver los promedios generales.`;
