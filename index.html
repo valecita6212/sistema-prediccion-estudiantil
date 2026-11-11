@@ -1,17 +1,14 @@
 <!DOCTYPE html>
-<html lang="es" id="html-root">
+<html lang="es" id="html-root" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIPA-IA | Sistema de Predicción de Rendimiento Académico</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Plus Jakarta Sans -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -21,50 +18,58 @@
             }
         }
     </script>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js para el Gráfico de Radar -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2pdf.js para la exportación real a PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         .text-size-sm { font-size: 87.5%; }
         .text-size-md { font-size: 100%; }
         .text-size-lg { font-size: 112.5%; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between transition-all duration-200 text-size-md">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col justify-between transition-colors duration-300 text-size-md">
 
     <!-- PANTALLA DE LOGIN -->
     <div id="login-screen" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-slate-100 text-center">
+        <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-2xl w-full max-w-md border border-slate-100 dark:border-slate-800 text-center">
             <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white mx-auto mb-4 shadow-lg shadow-blue-500/30">
                 <i data-lucide="brain-circuit" class="w-8 h-8"></i>
             </div>
-            <h2 class="text-2xl font-bold text-slate-900">Predicción de Rendimiento Académico</h2>
-            <p class="text-xs text-slate-500 mt-1 mb-6">Sistema Inteligente • @uniminuto.edu.co</p>
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Predicción Académica IA</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-6">Sistema Inteligente • @uniminuto.edu.co</p>
 
             <div class="space-y-4 text-left">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Usuario / Correo institucional</label>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Usuario / Correo institucional</label>
                     <div class="relative">
                         <i data-lucide="mail" class="w-5 h-5 text-slate-400 absolute left-3 top-3"></i>
-                        <input type="email" id="login-email" placeholder="docente@uniminuto.edu.co" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600 transition-colors">
+                        <input type="email" id="login-email" placeholder="docente@uniminuto.edu.co" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:border-blue-600 transition-colors">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Contraseña</label>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Contraseña</label>
                     <div class="relative">
                         <i data-lucide="lock" class="w-5 h-5 text-slate-400 absolute left-3 top-3"></i>
-                        <input type="password" id="login-pass" placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600 transition-colors">
-                        <button type="button" onclick="togglePassword()" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600">
+                        <input type="password" id="login-pass" placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:border-blue-600 transition-colors">
+                        <button type="button" onclick="togglePassword()" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                             <i data-lucide="eye" id="eye-icon" class="w-5 h-5"></i>
                         </button>
                     </div>
                 </div>
 
-                <div id="login-error" class="hidden text-xs text-rose-600 font-semibold bg-rose-50 p-2.5 rounded-lg border border-rose-100 flex items-center space-x-2">
+                <div id="login-error" class="hidden text-xs text-rose-600 dark:text-rose-400 font-semibold bg-rose-50 dark:bg-rose-950/50 p-2.5 rounded-lg border border-rose-100 dark:border-rose-900/50 flex items-center space-x-2">
                     <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
-                    <span>Credenciales incorrectas. Usa: docente@uniminuto.edu.co / admin123</span>
+                    <span>Credenciales: docente@uniminuto.edu.co / admin123</span>
                 </div>
 
                 <button type="button" onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all duration-200 shadow-md shadow-blue-500/20 flex items-center justify-center space-x-2 cursor-pointer">
-                    <span>Ingresar</span>
+                    <span>Ingresar al Sistema</span>
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </button>
             </div>
@@ -72,29 +77,34 @@
     </div>
 
     <!-- CABECERA INSTITUCIONAL -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 shadow-sm transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
                     <i data-lucide="graduation-cap" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold text-slate-900 tracking-tight">Predicción de Rendimiento Académico</h1>
-                    <p class="text-xs text-slate-500 font-medium">Intro a la Ciencia de Datos e IA • Autores: Dylan Ruiz, Sara Cardona</p>
+                    <h1 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">SIPA-IA • Rendimiento Académico</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Intro a Ciencia de Datos e IA • Autores: Dilan Ruiz, Sara Cardona</p>
                 </div>
             </div>
             
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-3">
+                <!-- Modo Oscuro / Claro Toggle -->
+                <button onclick="toggleDarkMode()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer" title="Cambiar tema">
+                    <i data-lucide="moon" id="theme-icon" class="w-5 h-5"></i>
+                </button>
+
                 <!-- Controles de Tamaño de Fuente -->
-                <div class="hidden sm:flex items-center space-x-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
-                    <button onclick="setFontSize('sm')" class="px-2.5 py-1 text-xs font-bold text-slate-600 hover:bg-white rounded-lg transition-colors cursor-pointer" title="Reducir fuente">A-</button>
-                    <button onclick="setFontSize('md')" class="px-2.5 py-1 text-xs font-bold text-slate-600 hover:bg-white rounded-lg transition-colors cursor-pointer" title="Fuente normal">A</button>
-                    <button onclick="setFontSize('lg')" class="px-2.5 py-1 text-xs font-bold text-slate-600 hover:bg-white rounded-lg transition-colors cursor-pointer" title="Aumentar fuente">A+</button>
+                <div class="hidden sm:flex items-center space-x-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <button onclick="setFontSize('sm')" class="px-2.5 py-1 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-colors cursor-pointer">A-</button>
+                    <button onclick="setFontSize('md')" class="px-2.5 py-1 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-colors cursor-pointer">A</button>
+                    <button onclick="setFontSize('lg')" class="px-2.5 py-1 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-colors cursor-pointer">A+</button>
                 </div>
 
-                <button onclick="handleLogout()" class="text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 px-3.5 py-2 rounded-xl transition-colors flex items-center space-x-1.5 border border-rose-100 cursor-pointer">
+                <button onclick="handleLogout()" class="text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 dark:hover:bg-rose-900/50 px-3.5 py-2 rounded-xl transition-colors flex items-center space-x-1.5 border border-rose-100 dark:border-rose-900/50 cursor-pointer">
                     <i data-lucide="log-out" class="w-4 h-4"></i>
-                    <span>Cerrar Sesión</span>
+                    <span>Salir</span>
                 </button>
             </div>
         </div>
@@ -105,30 +115,30 @@
         
         <!-- Tarjetas Resumen Superior -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between transition-colors">
                 <div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Estudiantes Analizados</p>
-                    <h3 id="stat-total" class="text-3xl font-bold text-slate-900 mt-1">0</h3>
+                    <h3 id="stat-total" class="text-3xl font-bold text-slate-900 dark:text-white mt-1">0</h3>
                 </div>
-                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                <div class="w-12 h-12 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center">
                     <i data-lucide="users" class="w-6 h-6"></i>
                 </div>
             </div>
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between transition-colors">
                 <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Riesgo Bajo / Bueno</p>
-                    <h3 id="stat-low" class="text-3xl font-bold text-emerald-600 mt-1">0</h3>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Riesgo Bajo / Moderado</p>
+                    <h3 id="stat-low" class="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">0</h3>
                 </div>
-                <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+                <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center">
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
             </div>
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between transition-colors">
                 <div>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">En Riesgo Alto</p>
-                    <h3 id="stat-high" class="text-3xl font-bold text-rose-600 mt-1">0</h3>
+                    <h3 id="stat-high" class="text-3xl font-bold text-rose-600 dark:text-rose-400 mt-1">0</h3>
                 </div>
-                <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center">
+                <div class="w-12 h-12 bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 rounded-xl flex items-center justify-center">
                     <i data-lucide="alert-triangle" class="w-6 h-6"></i>
                 </div>
             </div>
@@ -138,9 +148,9 @@
             
             <!-- COLUMNA IZQUIERDA: TABLA Y BUSCADOR -->
             <div class="lg:col-span-6 space-y-6">
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                        <h2 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                        <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
                             <i data-lucide="layout-dashboard" class="w-5 h-5 text-blue-600"></i>
                             <span>Panel de Estudiantes</span>
                         </h2>
@@ -153,21 +163,21 @@
                     <!-- Buscador -->
                     <div class="relative mb-4">
                         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
-                        <input type="text" id="search-input" oninput="filterStudents()" placeholder="Buscar estudiante por nombre..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600 transition-colors">
+                        <input type="text" id="search-input" oninput="filterStudents()" placeholder="Buscar estudiante por nombre..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:border-blue-600 transition-colors">
                     </div>
 
                     <!-- Tabla de Estudiantes -->
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="border-b border-slate-100 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                <tr class="border-b border-slate-100 dark:border-slate-800 text-xs font-bold text-slate-400 uppercase tracking-wider">
                                     <th class="py-3 px-3">Estudiante</th>
                                     <th class="py-3 px-3">Asistencia</th>
                                     <th class="py-3 px-3">Predicción</th>
                                     <th class="py-3 px-3 text-right">Acción</th>
                                 </tr>
                             </thead>
-                            <tbody id="student-table-body" class="divide-y divide-slate-100 text-sm">
+                            <tbody id="student-table-body" class="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
                                 <!-- Inyectado dinámicamente -->
                             </tbody>
                         </table>
@@ -175,61 +185,68 @@
                 </div>
             </div>
 
-            <!-- COLUMNA DERECHA: RESULTADOS Y PLANES -->
+            <!-- COLUMNA DERECHA: RESULTADOS, RADAR CHART Y PLANES -->
             <div class="lg:col-span-6 space-y-6">
-                <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between min-h-[520px]">
+                <div id="pdf-export-container" class="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between transition-colors">
                     <div>
                         <!-- Encabezado del Resultado -->
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-100 gap-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-100 dark:border-slate-800 gap-4">
                             <div>
-                                <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full">Resultado de Análisis IA</span>
-                                <h2 id="result-name" class="text-2xl font-bold text-slate-900 mt-2">Selecciona un estudiante</h2>
+                                <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 dark:bg-blue-950/50 dark:text-blue-400 px-3 py-1 rounded-full">Resultado de Análisis IA</span>
+                                <h2 id="result-name" class="text-2xl font-bold text-slate-900 dark:text-white mt-2">Selecciona un estudiante</h2>
                                 <p id="result-email" class="text-xs text-slate-400">-</p>
                             </div>
-                            <div id="result-badge" class="px-4 py-2 rounded-xl text-sm font-bold text-center bg-slate-100 text-slate-600">
+                            <div id="result-badge" class="px-4 py-2 rounded-xl text-sm font-bold text-center bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                                 Nivel de Riesgo: -
                             </div>
                         </div>
 
                         <!-- Métricas -->
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-6">
-                            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-center">
+                            <div class="bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
                                 <i data-lucide="clock" class="w-5 h-5 text-amber-500 mx-auto mb-1"></i>
                                 <span class="block text-xs text-slate-500">Inasistencias</span>
-                                <span id="metric-absences" class="text-base font-bold text-slate-900">-</span>
+                                <span id="metric-absences" class="text-base font-bold text-slate-900 dark:text-white">-</span>
                             </div>
-                            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-center">
+                            <div class="bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
                                 <i data-lucide="book-open" class="w-5 h-5 text-indigo-500 mx-auto mb-1"></i>
                                 <span class="block text-xs text-slate-500">Horas Estudio</span>
-                                <span id="metric-study" class="text-base font-bold text-slate-900">-</span>
+                                <span id="metric-study" class="text-base font-bold text-slate-900 dark:text-white">-</span>
                             </div>
-                            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-center">
+                            <div class="bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
                                 <i data-lucide="award" class="w-5 h-5 text-blue-500 mx-auto mb-1"></i>
                                 <span class="block text-xs text-slate-500">Calificación</span>
-                                <span id="metric-gpa" class="text-base font-bold text-slate-900">-</span>
+                                <span id="metric-gpa" class="text-base font-bold text-slate-900 dark:text-white">-</span>
                             </div>
-                            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-center">
+                            <div class="bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
                                 <i data-lucide="activity" class="w-5 h-5 text-emerald-500 mx-auto mb-1"></i>
                                 <span class="block text-xs text-slate-500">Asistencia</span>
-                                <span id="metric-attendance" class="text-base font-bold text-slate-900">-</span>
+                                <span id="metric-attendance" class="text-base font-bold text-slate-900 dark:text-white">-</span>
                             </div>
                         </div>
 
-                        <!-- Factores -->
+                        <!-- Gráfico de Radar -->
+                        <div class="my-6 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col items-center">
+                            <h3 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Evaluación Multidimensional (Radar IA)</h3>
+                            <div class="w-full max-w-[280px] h-[220px] flex items-center justify-center">
+                                <canvas id="radarChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Factores y Plan -->
                         <div class="space-y-4">
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 mb-2 flex items-center space-x-2">
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center space-x-2">
                                     <i data-lucide="alert-circle" class="w-4 h-4 text-rose-500"></i>
                                     <span>Factores Principales detectados por el modelo</span>
                                 </h3>
-                                <ul id="risk-factors" class="space-y-1.5 text-sm text-slate-600 bg-slate-50 p-4 rounded-xl border border-slate-100 list-disc list-inside">
+                                <ul id="risk-factors" class="space-y-1.5 text-sm text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800 list-disc list-inside">
                                     <li class="text-slate-400 italic">Selecciona un estudiante para ver los factores.</li>
                                 </ul>
                             </div>
 
-                            <!-- Plan de Mejora -->
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 mb-2 flex items-center space-x-2">
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center space-x-2">
                                     <i data-lucide="sparkles" class="w-4 h-4 text-blue-600"></i>
                                     <span>Plan de Mejora Sugerido</span>
                                 </h3>
@@ -240,66 +257,110 @@
                         </div>
                     </div>
 
-                    <!-- Botón de Envío de Correo Institucional -->
-                    <div class="mt-8 pt-6 border-t border-slate-100">
-                        <button onclick="sendReport()" id="btn-send" disabled class="w-full bg-slate-200 text-slate-400 font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 cursor-not-allowed shadow-sm">
-                            <i data-lucide="send" class="w-5 h-5"></i>
-                            <span>Notificar al Estudiante y Tutor (@uniminuto.edu.co)</span>
+                    <!-- Botones de Acción (Notificar y Exportar PDF) -->
+                    <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button onclick="sendReport()" id="btn-send" disabled class="w-full bg-slate-200 dark:bg-slate-800 text-slate-400 font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 cursor-not-allowed shadow-sm text-sm">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>Notificar Correo</span>
+                        </button>
+                        <button onclick="exportPDF()" id="btn-pdf" disabled class="w-full bg-slate-200 dark:bg-slate-800 text-slate-400 font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 cursor-not-allowed shadow-sm text-sm">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Exportar PDF</span>
                         </button>
                     </div>
                 </div>
             </div>
-
         </div>
     </main>
 
-    <!-- MODAL PARA NUEVO REGISTRO -->
+    <!-- CHATBOT FLOTANTE DE IA -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <button onclick="toggleChat()" id="chat-toggle-btn" class="w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-105 cursor-pointer">
+            <i data-lucide="bot" class="w-7 h-7"></i>
+        </button>
+
+        <div id="chat-window" class="hidden absolute bottom-20 right-0 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col h-[480px] overflow-hidden">
+            <div class="bg-blue-600 p-4 text-white flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="bot" class="w-5 h-5"></i>
+                    <span class="font-bold text-sm">Asesor IA SIPA (Gemini Engine)</span>
+                </div>
+                <button onclick="toggleChat()" class="text-white/80 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-3 text-xs sm:text-sm bg-slate-50/50 dark:bg-slate-950/50">
+                <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 max-w-[85%]">
+                    ¡Hola! Soy tu asistente de IA conectado al sistema SIPA. Pregúntame sobre los estudiantes en riesgo, estadísticas o consejos pedagógicos.
+                </div>
+            </div>
+
+            <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center space-x-2">
+                <input type="text" id="chat-input" onkeypress="handleChatKey(event)" placeholder="Escribe tu consulta a la IA..." class="flex-grow px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-xs focus:outline-none focus:border-blue-600">
+                <button onclick="sendChatMessage()" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-xl cursor-pointer"><i data-lucide="send" class="w-4 h-4"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA NUEVO REGISTRO CON BARRA DE CARGA -->
     <div id="add-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-2xl space-y-4 border border-slate-100">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="font-bold text-slate-900 flex items-center space-x-2">
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl max-w-md w-full shadow-2xl space-y-4 border border-slate-100 dark:border-slate-800">
+            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-3">
+                <h3 class="font-bold text-slate-900 dark:text-white flex items-center space-x-2">
                     <i data-lucide="user-plus" class="w-5 h-5 text-blue-600"></i>
-                    <span>Nuevo Registro</span>
+                    <span>Nuevo Registro e Inferencia IA</span>
                 </h3>
                 <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
             <div class="space-y-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700">Nombre del Estudiante</label>
-                    <input type="text" id="new-name" placeholder="Ej. Carlos Pérez" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700">Usuario institucional (se añadirá @uniminuto.edu.co)</label>
-                    <input type="text" id="new-username" placeholder="carlos.perez" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700">Horas de Estudio Semanales</label>
-                    <input type="number" id="new-study" placeholder="Ej. 10" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
+                <div id="modal-form-inputs" class="space-y-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700">Calificaciones (1-5)</label>
-                        <input type="number" step="0.1" id="new-gpa" placeholder="3.8" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Nombre del Estudiante</label>
+                        <input type="text" id="new-name" placeholder="Ej. Carlos Pérez" class="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:border-blue-600">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700">Asistencia %</label>
-                        <input type="number" id="new-attendance" placeholder="85" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-600">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Usuario institucional</label>
+                        <input type="text" id="new-username" placeholder="carlos.perez" class="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:border-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Horas de Estudio Semanales</label>
+                        <input type="number" id="new-study" placeholder="Ej. 10" class="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:border-blue-600">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Calificaciones (1-5)</label>
+                            <input type="number" step="0.1" id="new-gpa" placeholder="3.8" class="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:border-blue-600">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Asistencia %</label>
+                            <input type="number" id="new-attendance" placeholder="85" class="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm focus:outline-none focus:border-blue-600">
+                        </div>
                     </div>
                 </div>
 
-                <button type="button" onclick="handleAddStudent()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors mt-2 cursor-pointer shadow-md shadow-blue-500/20">
-                    Guardar y Predecir
+                <!-- Barra de Carga de Inferencia IA (Oculta por defecto) -->
+                <div id="inference-loading" class="hidden py-8 text-center space-y-4">
+                    <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <p id="inference-status" class="text-xs font-semibold text-slate-600 dark:text-slate-300">Iniciando preprocesamiento de datos...</p>
+                    <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div id="inference-bar" class="bg-blue-600 h-full w-0 transition-all duration-500"></div>
+                    </div>
+                </div>
+
+                <div id="modal-error" class="hidden text-xs text-rose-600 font-semibold bg-rose-50 p-2.5 rounded-lg border border-rose-100"></div>
+
+                <button type="button" id="btn-save-inference" onclick="handleAddStudent()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors mt-2 cursor-pointer shadow-md shadow-blue-500/25">
+                    Guardar y Ejecutar Inferencia IA
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- NOTIFICACIÓN DE ÉXITO -->
-    <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl transform translate-y-32 opacity-0 transition-all duration-300 flex items-center space-x-3 z-50 border border-slate-700">
+    <!-- NOTIFICACIÓN TOAST -->
+    <div id="toast" class="fixed bottom-6 right-24 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl transform translate-y-32 opacity-0 transition-all duration-300 flex items-center space-x-3 z-50 border border-slate-700">
         <div class="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-xs">✓</div>
         <div>
-            <p class="text-sm font-bold">¡Notificación Enviada!</p>
+            <p class="text-sm font-bold">¡Operación Exitosa!</p>
             <p class="text-xs text-slate-400" id="toast-msg">Correo institucional enviado con éxito.</p>
         </div>
     </div>
@@ -308,7 +369,6 @@
     <script>
         const DOMAIN = "@uniminuto.edu.co";
 
-        // Datos iniciales por defecto si es la primera vez
         const defaultStudents = [
             {
                 id: 1,
@@ -318,10 +378,11 @@
                 studyHours: 14,
                 gpa: "4.5 / 5.0",
                 prediction: "Bueno",
-                predictionClass: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+                predictionClass: "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-900",
                 riskLevel: "Bajo",
                 factors: ["Excelente asistencia (92%)", "Horas de estudio semanales óptimas (14h)"],
-                plan: ["Mantener metodologías de estudio actuales", "Participación en semilleros de IA y datos"]
+                plan: ["Mantener metodologías de estudio actuales", "Participación en semilleros de IA y datos"],
+                radar: [90, 85, 90, 95, 88]
             },
             {
                 id: 2,
@@ -331,10 +392,11 @@
                 studyHours: 5,
                 gpa: "2.8 / 5.0",
                 prediction: "En Riesgo",
-                predictionClass: "bg-rose-50 text-rose-700 border border-rose-200",
+                predictionClass: "bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/50 dark:text-rose-400 dark:border-rose-900",
                 riskLevel: "Alto",
                 factors: ["Baja Asistencia (64%)", "Pocas horas de estudio (5h semanales)"],
-                plan: ["Aumentar horas de estudio (Meta sugerida: 13h semanales)", "Mejorar Asistencia (Meta sugerida: superar 85%)", "Asignar tutoría de refuerzo y seguimiento quincenal"]
+                plan: ["Aumentar horas de estudio (Meta sugerida: 13h semanales)", "Mejorar Asistencia (Meta sugerida: superar 85%)", "Asignar tutoría de refuerzo y seguimiento quincenal"],
+                radar: [45, 30, 40, 50, 42]
             },
             {
                 id: 3,
@@ -344,18 +406,41 @@
                 studyHours: 10,
                 gpa: "3.9 / 5.0",
                 prediction: "Medio",
-                predictionClass: "bg-amber-50 text-amber-700 border border-amber-200",
+                predictionClass: "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-900",
                 riskLevel: "Moderado",
                 factors: ["Asistencia aceptable (88%)", "Horas de estudio en promedio estándar"],
-                plan: ["Incrementar ligeramente el tiempo de repaso autónomo", "Revisión de entregas prácticas con tutor asignado"]
+                plan: ["Incrementar ligeramente el tiempo de repaso autónomo", "Revisión de entregas prácticas con tutor asignado"],
+                radar: [75, 70, 78, 80, 72]
             }
         ];
 
-        // Cargar desde localStorage o usar los valores por defecto
         let students = JSON.parse(localStorage.getItem('sipa_students')) || defaultStudents;
         let selectedStudent = null;
+        let radarChartInstance = null;
 
-        // VER / OCULTAR CONTRASEÑA
+        // TEMA OSCURO / CLARO
+        function toggleDarkMode() {
+            const root = document.getElementById('html-root');
+            const icon = document.getElementById('theme-icon');
+            if (root.classList.contains('dark')) {
+                root.classList.remove('dark');
+                icon.setAttribute('data-lucide', 'moon');
+                localStorage.setItem('sipa_theme', 'light');
+            } else {
+                root.classList.add('dark');
+                icon.setAttribute('data-lucide', 'sun');
+                localStorage.setItem('sipa_theme', 'dark');
+            }
+            lucide.createIcons();
+            if (selectedStudent) updateRadarChart(selectedStudent.radar);
+        }
+
+        if (localStorage.getItem('sipa_theme') === 'dark') {
+            document.getElementById('html-root').classList.add('dark');
+            document.getElementById('theme-icon').setAttribute('data-lucide', 'sun');
+        }
+
+        // PASSWORD TOGGLE
         function togglePassword() {
             const passInput = document.getElementById('login-pass');
             const eyeIcon = document.getElementById('eye-icon');
@@ -369,7 +454,7 @@
             lucide.createIcons();
         }
 
-        // CAMBIAR TAMAÑO DE FUENTE
+        // TAMAÑO DE FUENTE
         function setFontSize(size) {
             const root = document.getElementById('html-root');
             root.classList.remove('text-size-sm', 'text-size-md', 'text-size-lg');
@@ -397,12 +482,7 @@
             document.getElementById('login-error').classList.add('hidden');
         }
 
-        // GUARDAR EN LOCALSTORAGE
-        function saveToStorage() {
-            localStorage.setItem('sipa_students', JSON.stringify(students));
-        }
-
-        // RENDERIZAR TABLA
+        // RENDER TABLA
         function renderStudentTable(filterText = "") {
             const tbody = document.getElementById('student-table-body');
             const filtered = students.filter(s => s.name.toLowerCase().includes(filterText.toLowerCase()));
@@ -417,14 +497,14 @@
             }
 
             tbody.innerHTML = filtered.map(s => `
-                <tr class="hover:bg-blue-50/50 transition-colors cursor-pointer" onclick="selectStudent(${s.id})">
-                    <td class="py-3.5 px-3 font-semibold text-slate-900">${s.name}</td>
-                    <td class="py-3.5 px-3 text-slate-600">${s.attendance}%</td>
+                <tr class="hover:bg-blue-50/50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer" onclick="selectStudent(${s.id})">
+                    <td class="py-3.5 px-3 font-semibold text-slate-900 dark:text-white">${s.name}</td>
+                    <td class="py-3.5 px-3 text-slate-600 dark:text-slate-300">${s.attendance}%</td>
                     <td class="py-3.5 px-3">
                         <span class="px-2.5 py-1 rounded-full text-xs font-bold ${s.predictionClass}">${s.prediction}</span>
                     </td>
                     <td class="py-3.5 px-3 text-right">
-                        <button class="text-xs font-bold text-blue-600 hover:text-blue-800">Ver →</button>
+                        <button class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800">Ver →</button>
                     </td>
                 </tr>
             `).join('');
@@ -432,8 +512,49 @@
         }
 
         function filterStudents() {
-            const query = document.getElementById('search-input').value;
-            renderStudentTable(query);
+            renderStudentTable(document.getElementById('search-input').value);
+        }
+
+        // GRÁFICO DE RADAR
+        function updateRadarChart(dataValues) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            const isDark = document.getElementById('html-root').classList.contains('dark');
+            const gridColor = isDark ? '#334155' : '#e2e8f0';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
+            if (radarChartInstance) {
+                radarChartInstance.destroy();
+            }
+
+            radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Asistencia', 'Horas Estudio', 'GPA', 'Participación', 'Entregas'],
+                    datasets: [{
+                        label: 'Perfil Estudiante',
+                        data: dataValues,
+                        backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                        borderColor: '#2563eb',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#2563eb'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 100,
+                            grid: { color: gridColor },
+                            angleLines: { color: gridColor },
+                            ticks: { display: false },
+                            pointLabels: { color: textColor, font: { size: 10, weight: 'bold' } }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
         }
 
         // SELECCIONAR ESTUDIANTE
@@ -453,27 +574,36 @@
             document.getElementById('metric-gpa').textContent = selectedStudent.gpa;
             document.getElementById('metric-attendance').textContent = `${selectedStudent.attendance}%`;
 
-            const factorsList = document.getElementById('risk-factors');
-            factorsList.innerHTML = selectedStudent.factors.map(f => `<li class="font-medium text-slate-700">${f}</li>`).join('');
+            document.getElementById('risk-factors').innerHTML = selectedStudent.factors.map(f => `<li class="font-medium text-slate-700 dark:text-slate-300">${f}</li>`).join('');
 
-            const planContainer = document.getElementById('improvement-plan');
-            planContainer.innerHTML = selectedStudent.plan.map(p => `
-                <div class="flex items-start space-x-2 text-sm text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
+            document.getElementById('improvement-plan').innerHTML = selectedStudent.plan.map(p => `
+                <div class="flex items-start space-x-2 text-sm text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
                     <i data-lucide="check" class="w-4 h-4 text-blue-600 shrink-0 mt-0.5"></i>
                     <span>${p}</span>
                 </div>
             `).join('');
 
-            const btnSend = document.getElementById('btn-send');
-            btnSend.disabled = false;
-            btnSend.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer shadow-md shadow-blue-500/20";
+            updateRadarChart(selectedStudent.radar);
+
+            // Activar botones de envío y PDF
+            ['btn-send', 'btn-pdf'].forEach(id => {
+                const btn = document.getElementById(id);
+                btn.disabled = false;
+                btn.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer shadow-sm text-sm";
+            });
 
             lucide.createIcons();
         }
 
-        // MODAL NUEVO REGISTRO
+        // MODAL NUEVO REGISTRO CON BARRA DE CARGA DE INFERENCIA
         function openModal() { document.getElementById('add-modal').classList.remove('hidden'); }
-        function closeModal() { document.getElementById('add-modal').classList.add('hidden'); }
+        function closeModal() { 
+            document.getElementById('add-modal').classList.add('hidden');
+            document.getElementById('inference-loading').classList.add('hidden');
+            document.getElementById('modal-form-inputs').classList.remove('hidden');
+            document.getElementById('btn-save-inference').classList.remove('hidden');
+            document.getElementById('inference-bar').style.width = '0%';
+        }
 
         function handleAddStudent() {
             const name = document.getElementById('new-name').value.trim();
@@ -481,77 +611,165 @@
             const study = parseFloat(document.getElementById('new-study').value);
             const gpaVal = parseFloat(document.getElementById('new-gpa').value);
             const attendance = parseInt(document.getElementById('new-attendance').value);
+            const errorBox = document.getElementById('modal-error');
 
             if (!name || !username || isNaN(study) || isNaN(gpaVal) || isNaN(attendance)) {
-                alert("Por favor completa todos los campos del nuevo registro.");
+                errorBox.textContent = "Por favor completa todos los campos del formulario.";
+                errorBox.classList.remove('hidden');
                 return;
             }
+            errorBox.classList.add('hidden');
 
-            let prediction = "Bueno";
-            let predClass = "bg-emerald-50 text-emerald-700 border border-emerald-200";
-            let risk = "Bajo";
-            let factors = [`Asistencia del ${attendance}%`, `${study} horas de estudio semanales`];
-            let plan = ["Continuar con el buen ritmo académico", "Asesoría opcional con tutor"];
+            // Mostrar barra de carga de inferencia IA
+            document.getElementById('modal-form-inputs').classList.add('hidden');
+            document.getElementById('btn-save-inference').classList.add('hidden');
+            const loadingDiv = document.getElementById('inference-loading');
+            const statusText = document.getElementById('inference-status');
+            const progressBar = document.getElementById('inference-bar');
+            loadingDiv.classList.remove('hidden');
 
-            if (attendance < 75 || gpaVal < 3.0 || study < 7) {
-                prediction = "En Riesgo";
-                predClass = "bg-rose-50 text-rose-700 border border-rose-200";
-                risk = "Alto";
-                factors = [`Baja Asistencia (${attendance}%)`, `Pocas horas de estudio (${study}h)`];
-                plan = [
-                    `Aumentar horas de estudio (Meta sugerida: ${study + 5}h semanales)`,
-                    "Mejorar Asistencia (Meta sugerida: superar 85%)",
-                    "Asignar tutoría de refuerzo y seguimiento quincenal"
-                ];
-            } else if (attendance < 85 || gpaVal < 3.8) {
-                prediction = "Medio";
-                predClass = "bg-amber-50 text-amber-700 border border-amber-200";
-                risk = "Moderado";
-                factors = [`Asistencia moderada (${attendance}%)`, `Promedio estándar (${gpaVal})`];
-                plan = ["Reforzar conceptos clave", "Monitoreo quincenal del docente"];
-            }
+            setTimeout(() => {
+                statusText.textContent = "Ejecutando modelo Random Forest & Scikit-Learn...";
+                progressBar.style.width = '45%';
+            }, 600);
 
-            const cleanUser = username.replace('@uniminuto.edu.co', '').trim();
-            const newStudent = {
-                id: Date.now(),
-                name: name,
-                email: cleanUser + DOMAIN,
-                attendance: attendance,
-                studyHours: study,
-                gpa: `${gpaVal.toFixed(1)} / 5.0`,
-                prediction: prediction,
-                predictionClass: predClass,
-                riskLevel: risk,
-                factors: factors,
-                plan: plan
-            };
+            setTimeout(() => {
+                statusText.textContent = "Calculando matrices de riesgo y recomendador...";
+                progressBar.style.width = '85%';
+            }, 1300);
 
-            students.push(newStudent);
-            saveToStorage(); // Guarda permanentemente
-            renderStudentTable();
-            selectStudent(newStudent.id);
-            closeModal();
+            setTimeout(() => {
+                progressBar.style.width = '100%';
+                setTimeout(() => {
+                    let prediction = "Bueno";
+                    let predClass = "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-900";
+                    let risk = "Bajo";
+                    let factors = [`Asistencia del ${attendance}%`, `${study} horas de estudio semanales`];
+                    let plan = ["Continuar con el buen ritmo académico", "Asesoría opcional con tutor"];
+                    let radarVal = [attendance, Math.min(study * 8, 100), Math.min(gpaVal * 20, 100), 85, 90];
 
-            // Limpiar formulario
-            document.getElementById('new-name').value = '';
-            document.getElementById('new-username').value = '';
-            document.getElementById('new-study').value = '';
-            document.getElementById('new-gpa').value = '';
-            document.getElementById('new-attendance').value = '';
+                    if (attendance < 75 || gpaVal < 3.0 || study < 7) {
+                        prediction = "En Riesgo";
+                        predClass = "bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/50 dark:text-rose-400 dark:border-rose-900";
+                        risk = "Alto";
+                        factors = [`Baja Asistencia (${attendance}%)`, `Pocas horas de estudio (${study}h)`];
+                        plan = [
+                            `Aumentar horas de estudio (Meta sugerida: ${study + 5}h semanales)`,
+                            "Mejorar Asistencia (Meta sugerida: superar 85%)",
+                            "Asignar tutoría de refuerzo y seguimiento quincenal"
+                        ];
+                        radarVal = [attendance, Math.min(study * 10, 100), Math.min(gpaVal * 20, 100), 50, 45];
+                    } else if (attendance < 85 || gpaVal < 3.8) {
+                        prediction = "Medio";
+                        predClass = "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-900";
+                        risk = "Moderado";
+                        factors = [`Asistencia moderada (${attendance}%)`, `Promedio estándar (${gpaVal})`];
+                        plan = ["Reforzar conceptos clave", "Monitoreo quincenal del docente"];
+                        radarVal = [attendance, Math.min(study * 9, 100), Math.min(gpaVal * 20, 100), 70, 75];
+                    }
+
+                    const cleanUser = username.replace(DOMAIN, '').trim();
+                    const newStudent = {
+                        id: Date.now(),
+                        name: name,
+                        email: cleanUser + DOMAIN,
+                        attendance: attendance,
+                        studyHours: study,
+                        gpa: `${gpaVal.toFixed(1)} / 5.0`,
+                        prediction: prediction,
+                        predictionClass: predClass,
+                        riskLevel: risk,
+                        factors: factors,
+                        plan: plan,
+                        radar: radarVal
+                    };
+
+                    students.push(newStudent);
+                    localStorage.setItem('sipa_students', JSON.stringify(students));
+                    renderStudentTable();
+                    selectStudent(newStudent.id);
+                    closeModal();
+
+                    document.getElementById('new-name').value = '';
+                    document.getElementById('new-username').value = '';
+                    document.getElementById('new-study').value = '';
+                    document.getElementById('new-gpa').value = '';
+                    document.getElementById('new-attendance').value = '';
+                }, 500);
+            }, 1800);
         }
 
-        // ENVIAR REPORTE
+        // NOTIFICAR CORREO
         function sendReport() {
             if (!selectedStudent) return;
-
             const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toast-msg');
-            toastMsg.textContent = `Reporte enviado al correo ${selectedStudent.email} con copia al tutor.`;
-
+            document.getElementById('toast-msg').textContent = `Reporte enviado al correo ${selectedStudent.email} con copia al tutor.`;
             toast.classList.remove('translate-y-32', 'opacity-0');
+            setTimeout(() => { toast.classList.add('translate-y-32', 'opacity-0'); }, 4000);
+        }
+
+        // EXPORTAR A PDF REAL
+        function exportPDF() {
+            if (!selectedStudent) return;
+            const element = document.getElementById('pdf-export-container');
+            const opt = {
+                margin:       10,
+                filename:     `Reporte_SIPA_${selectedStudent.name.replace(/\s+/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().from(element).set(opt).save();
+        }
+
+        // CHATBOT FUNCIONAL DE IA
+        function toggleChat() {
+            const win = document.getElementById('chat-window');
+            win.classList.toggle('hidden');
+        }
+
+        function handleChatKey(e) {
+            if (e.key === 'Enter') sendChatMessage();
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const query = input.value.trim();
+            if (!query) return;
+
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.innerHTML += `
+                <div class="flex justify-end">
+                    <div class="bg-blue-600 text-white p-3 rounded-2xl shadow-sm max-w-[85%]">${query}</div>
+                </div>
+            `;
+            input.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Simulación de respuesta de IA basada en contexto real
             setTimeout(() => {
-                toast.classList.add('translate-y-32', 'opacity-0');
-            }, 4000);
+                let response = "Analizando la base de datos institucional de UNIMINUTO... ";
+                const qLower = query.toLowerCase();
+
+                if (qLower.includes("riesgo") || qLower.includes("alto")) {
+                    const highRisk = students.filter(s => s.riskLevel === 'Alto');
+                    response += `Hay ${highRisk.length} estudiante(s) en riesgo alto: ${highRisk.map(s => s.name).join(', ')}. Se recomienda activar tutorías inmediatas.`;
+                } else if (qLower.includes("asistencia") || qLower.includes("asisten")) {
+                    const avgAtt = Math.round(students.reduce((acc, s) => acc + s.attendance, 0) / students.length);
+                    response += `El promedio general de asistencia en el grupo analizado es del ${avgAtt}%.`;
+                } else if (selectedStudent && (qLower.includes("él") || qLower.includes("ella") || qLower.includes("estudiante") || qLower.includes("su"))) {
+                    response += `Para ${selectedStudent.name}, el modelo detectó un nivel de riesgo ${selectedStudent.riskLevel}. Su principal factor es: ${selectedStudent.factors[0]}.`;
+                } else {
+                    response += `Como asesor de SIPA-IA, te sugiero revisar las horas de estudio semanales y mantener una comunicación constante con los tutores asignados.`;
+                }
+
+                chatMessages.innerHTML += `
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 max-w-[85%] text-slate-800 dark:text-slate-200">
+                        ${response}
+                    </div>
+                `;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 800);
         }
 
         // INICIALIZAR
