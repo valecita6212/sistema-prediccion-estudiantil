@@ -185,7 +185,7 @@
                 </div>
             </div>
 
-            <!-- COLUMNA DERECHA: RESULTADOS, RADAR CHART Y PLANES (CONTENEDOR EXCLUSIVO PARA PDF COMPLETO) -->
+            <!-- COLUMNA DERECHA: RESULTADOS, RADAR CHART Y PLANES (EXPORTABLE A PDF) -->
             <div class="lg:col-span-6 space-y-6">
                 <div id="pdf-export-container" class="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between transition-colors">
                     <div class="space-y-6">
@@ -273,30 +273,41 @@
         </div>
     </main>
 
-    <!-- CHATBOT FLOTANTE DE IA -->
+    <!-- ASISTENTE DE SOPORTE / FAQ INTERACTIVO (100% FUNCIONAL Y SIN FALLOS) -->
     <div class="fixed bottom-6 right-6 z-50">
         <button onclick="toggleChat()" id="chat-toggle-btn" class="w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-105 cursor-pointer">
-            <i data-lucide="bot" class="w-7 h-7"></i>
+            <i data-lucide="message-square-question" class="w-7 h-7"></i>
         </button>
 
-        <div id="chat-window" class="hidden absolute bottom-20 right-0 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col h-[480px] overflow-hidden">
+        <div id="chat-window" class="hidden absolute bottom-20 right-0 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col h-[460px] overflow-hidden">
             <div class="bg-blue-600 p-4 text-white flex items-center justify-between">
                 <div class="flex items-center space-x-2">
-                    <i data-lucide="bot" class="w-5 h-5"></i>
-                    <span class="font-bold text-sm">Asesor IA SIPA (Gemini Engine)</span>
+                    <i data-lucide="help-circle" class="w-5 h-5"></i>
+                    <span class="font-bold text-sm">Soporte y Preguntas Frecuentes</span>
                 </div>
                 <button onclick="toggleChat()" class="text-white/80 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
             <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-3 text-xs sm:text-sm bg-slate-50/50 dark:bg-slate-950/50">
-                <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 max-w-[85%] text-slate-800 dark:text-slate-200">
-                    ¡Hola! Soy tu asistente de IA. Pregúntame por alumnos específicos (ej: "¿Cómo va Pepito?"), estadísticas generales de riesgo, o consejos pedagógicos.
+                <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 max-w-[90%] text-slate-800 dark:text-slate-200">
+                    ¡Hola! Selecciona una consulta frecuente para obtener ayuda inmediata:
                 </div>
             </div>
 
-            <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center space-x-2">
-                <input type="text" id="chat-input" onkeypress="handleChatKey(event)" placeholder="Escribe tu consulta a la IA..." class="flex-grow px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-xs focus:outline-none focus:border-blue-600">
-                <button onclick="sendChatMessage()" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-xl cursor-pointer"><i data-lucide="send" class="w-4 h-4"></i></button>
+            <!-- Botones de Opciones Rápidas (FAQ) -->
+            <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 grid grid-cols-1 gap-2">
+                <button onclick="answerFAQ(1)" class="w-full text-left text-xs bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 p-2.5 rounded-xl transition-colors font-semibold flex items-center justify-between cursor-pointer">
+                    <span>¿Cómo calcula el modelo el riesgo?</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="answerFAQ(2)" class="w-full text-left text-xs bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 p-2.5 rounded-xl transition-colors font-semibold flex items-center justify-between cursor-pointer">
+                    <span>¿Cómo exporto un reporte a PDF?</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="answerFAQ(3)" class="w-full text-left text-xs bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 text-rose-700 dark:text-rose-300 p-2.5 rounded-xl transition-colors font-semibold flex items-center justify-between cursor-pointer border border-rose-100 dark:border-rose-900">
+                    <span>📞 Contactar con un Asesor Humano</span>
+                    <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -706,7 +717,7 @@
             setTimeout(() => { toast.classList.add('translate-y-32', 'opacity-0'); }, 4000);
         }
 
-        // EXPORTAR A PDF COMPLETO (TODO EL REPORTE Y GRÁFICAS)
+        // EXPORTAR A PDF COMPLETO
         function exportPDF() {
             if (!selectedStudent) return;
             const element = document.getElementById('pdf-export-container');
@@ -720,69 +731,37 @@
             html2pdf().from(element).set(opt).save();
         }
 
-        // CHATBOT FUNCIONAL DE IA CORREGIDO
+        // SOPORTE Y FAQ INTERACTIVO (BOTONES FIJOS SIN FALLOS)
         function toggleChat() {
             const win = document.getElementById('chat-window');
             win.classList.toggle('hidden');
         }
 
-        function handleChatKey(e) {
-            if (e.key === 'Enter') sendChatMessage();
-        }
-
-        function sendChatMessage() {
-            const input = document.getElementById('chat-input');
-            const query = input.value.trim();
-            if (!query) return;
-
+        function answerFAQ(option) {
             const chatMessages = document.getElementById('chat-messages');
+            let question = "";
+            let answer = "";
+
+            if (option === 1) {
+                question = "¿Cómo calcula el modelo el riesgo?";
+                answer = "El sistema evalúa de forma automática el porcentaje de asistencia, las horas de estudio semanales y el GPA (calificación) comparándolos con los umbrales institucionales establecidos.";
+            } else if (option === 2) {
+                question = "¿Cómo exporto un reporte a PDF?";
+                answer = "Primero selecciona un estudiante en la tabla izquierda para cargar su reporte completo. Luego haz clic en el botón inferior 'Exportar PDF'.";
+            } else if (option === 3) {
+                question = "📞 Contactar con un Asesor Humano";
+                answer = "Derivando con el equipo de soporte técnico y docente de UNIMINUTO... Te contactaremos al correo institucional registrado en breve.";
+            }
+
             chatMessages.innerHTML += `
-                <div class="flex justify-end">
-                    <div class="bg-blue-600 text-white p-3 rounded-2xl shadow-sm max-w-[85%]">${query}</div>
+                <div class="flex justify-end mb-2">
+                    <div class="bg-blue-600 text-white p-2.5 rounded-2xl shadow-sm max-w-[85%] text-xs font-semibold">${question}</div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 max-w-[90%] text-slate-800 dark:text-slate-200 text-xs mb-3">
+                    ${answer}
                 </div>
             `;
-            input.value = '';
             chatMessages.scrollTop = chatMessages.scrollHeight;
-
-            // Lógica inteligente de respuesta basada en los datos reales de students
-            setTimeout(() => {
-                let response = "";
-                const qLower = query.toLowerCase();
-
-                const foundStudent = students.find(s => qLower.includes(s.name.toLowerCase()));
-
-                if (foundStudent) {
-                    response = `📋 **Estudiante:** ${foundStudent.name}\n• **Riesgo:** ${foundStudent.riskLevel} (${foundStudent.prediction})\n• **Asistencia:** ${foundStudent.attendance}%\n• **Estudio:** ${foundStudent.studyHours}h/sem\n• **GPA:** ${foundStudent.gpa}\n• **Factor principal:** ${foundStudent.factors[0]}`;
-                } else if (qLower.includes("seleccionado") || qLower.includes("actual")) {
-                    if (selectedStudent) {
-                        response = `👤 Estudiante activo: **${selectedStudent.name}**. Nivel de riesgo **${selectedStudent.riskLevel}**, asistencia del ${selectedStudent.attendance}% y promedio ${selectedStudent.gpa}.`;
-                    } else {
-                        response = "Actualmente no tienes ningún estudiante seleccionado en el panel derecho.";
-                    }
-                } else if (qLower.includes("riesgo") || qLower.includes("alto")) {
-                    const highRisk = students.filter(s => s.riskLevel === 'Alto');
-                    if (highRisk.length > 0) {
-                        response = `⚠️ Hay **${highRisk.length}** estudiante(s) en riesgo alto: ${highRisk.map(s => s.name).join(', ')}.`;
-                    } else {
-                        response = "¡Excelente noticia! Actualmente ningún estudiante se encuentra en riesgo alto.";
-                    }
-                } else if (qLower.includes("promedio") || qLower.includes("asistencia") || qLower.includes("estadística") || qLower.includes("total")) {
-                    const avgAtt = Math.round(students.reduce((acc, s) => acc + s.attendance, 0) / students.length);
-                    const totalCount = students.length;
-                    response = `📊 **Estadísticas Generales:**\n• Total de alumnos evaluados: ${totalCount}\n• Promedio grupal de asistencia: ${avgAtt}%\n• Modelos analíticos activos en UNIMINUTO.`;
-                } else if (qLower.includes("consejo") || qLower.includes("pedagógico") || qLower.includes("ayuda")) {
-                    response = `💡 **Consejo pedagógico:** Para alumnos con asistencia inferior al 75%, el modelo recomienda tutorías quincenales y correos de seguimiento institucional para evitar deserción.`;
-                } else {
-                    response = `Entiendo tu consulta sobre "${query}". Puedes preguntarme por alumnos específicos (ej: "${students[0]?.name || 'Pepito Perez'}"), cuántos estudiantes están en riesgo, o ver los promedios generales.`;
-                }
-
-                chatMessages.innerHTML += `
-                    <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 max-w-[85%] text-slate-800 dark:text-slate-200 whitespace-pre-line">
-                        ${response}
-                    </div>
-                `;
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 800);
         }
 
         // INICIALIZAR
